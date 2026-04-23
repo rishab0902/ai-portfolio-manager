@@ -4,31 +4,43 @@ import SetupPage from './components/SetupPage';
 import CallbackPage from './components/CallbackPage';
 
 function App() {
-  const [isSetupDone, setIsSetupDone] = useState(false);
-  const [connectionMode, setConnectionMode] = useState(null); // 'zerodha' or 'groww'
+  // Persist session across page refreshes
+  const [isSetupDone, setIsSetupDone] = useState(
+    () => localStorage.getItem('setup_done') === 'true'
+  );
+  const [connectionMode, setConnectionMode] = useState(
+    () => localStorage.getItem('connection_mode') || null
+  );
 
   // Detect if we're on the /callback route (Zerodha redirect)
   const isCallback = window.location.pathname === '/callback';
 
   const handleSetupComplete = (mode) => {
+    localStorage.setItem('setup_done', 'true');
+    localStorage.setItem('connection_mode', mode);
     setConnectionMode(mode);
     setIsSetupDone(true);
   };
 
   const handleCallbackSuccess = () => {
+    localStorage.setItem('setup_done', 'true');
+    localStorage.setItem('connection_mode', 'zerodha');
     setConnectionMode('zerodha');
     setIsSetupDone(true);
   };
 
   const handleCallbackError = () => {
-    // Clean the URL and go back to setup
+    // Go back to / without reloading — avoids wiping React state
     window.history.replaceState({}, '', '/');
-    window.location.reload();
+    setIsSetupDone(false);
+    setConnectionMode(null);
   };
 
   const handleLogout = () => {
     localStorage.removeItem('zerodha_api_key');
     localStorage.removeItem('zerodha_api_secret');
+    localStorage.removeItem('setup_done');
+    localStorage.removeItem('connection_mode');
     setIsSetupDone(false);
     setConnectionMode(null);
   };

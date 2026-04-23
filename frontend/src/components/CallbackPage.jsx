@@ -1,17 +1,20 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { generateZerodhaSession } from '../services/api';
 import { CheckCircle2, AlertTriangle, Loader2 } from 'lucide-react';
 
 export default function CallbackPage({ onSuccess, onError }) {
-    const [status, setStatus] = useState('processing'); // 'processing', 'success', 'error'
+    const [status, setStatus] = useState('processing');
     const [errorMsg, setErrorMsg] = useState('');
+    // Guard against React Strict Mode double-invocation
+    const hasRun = useRef(false);
 
     useEffect(() => {
+        if (hasRun.current) return; // already ran, skip second invocation
+        hasRun.current = true;
         handleCallback();
     }, []);
 
     const handleCallback = async () => {
-        // Extract request_token from the URL
         const params = new URLSearchParams(window.location.search);
         const requestToken = params.get('request_token');
         const loginStatus = params.get('status');
@@ -19,32 +22,28 @@ export default function CallbackPage({ onSuccess, onError }) {
         if (!requestToken) {
             setStatus('error');
             setErrorMsg('No request_token found in the redirect URL.');
-            setTimeout(() => onError(), 3000);
+            // Don't reload — just let user navigate back
             return;
         }
 
         if (loginStatus === 'cancelled') {
             setStatus('error');
-            setErrorMsg('Login was cancelled by the user.');
-            setTimeout(() => onError(), 3000);
+            setErrorMsg('Login was cancelled.');
             return;
         }
 
-        // Retrieve saved credentials from localStorage
         const apiKey = localStorage.getItem('zerodha_api_key');
         const apiSecret = localStorage.getItem('zerodha_api_secret');
 
         if (!apiKey || !apiSecret) {
             setStatus('error');
             setErrorMsg('API credentials not found. Please start the setup again.');
-            setTimeout(() => onError(), 3000);
             return;
         }
 
         try {
             await generateZerodhaSession(apiKey, apiSecret, requestToken);
             setStatus('success');
-            // Clean up the URL and redirect to dashboard
             setTimeout(() => {
                 window.history.replaceState({}, '', '/');
                 onSuccess();
@@ -52,8 +51,8 @@ export default function CallbackPage({ onSuccess, onError }) {
         } catch (err) {
             setStatus('error');
             const backendError = err.response?.data?.detail || err.message;
-            setErrorMsg(`Token exchange failed. Server responded with: ${backendError}`);
-            setTimeout(() => onError(), 6000); // Wait a bit longer so user can read it
+            setErrorMsg(`Token exchange failed: ${backendError}`);
+            // Don't auto-navigate — let user click a button
         }
     };
 
@@ -87,8 +86,16 @@ export default function CallbackPage({ onSuccess, onError }) {
                             <AlertTriangle className="w-10 h-10 text-red-400" />
                         </div>
                         <h2 className="text-xl font-bold text-white mb-2">Connection Failed</h2>
-                        <p className="text-red-300 text-sm mb-4">{errorMsg}</p>
-                        <p className="text-slate-500 text-xs">Redirecting back to setup...</p>
+                        <p className="text-red-300 text-sm mb-6">{errorMsg}</p>
+                        <button
+                            onClick={() => {
+                                window.history.replaceState({}, '', '/');
+                                onError();
+                            }}
+                            className="bg-slate-800 hover:bg-slate-700 text-slate-300 font-medium px-6 py-2.5 rounded-xl border border-slate-700 text-sm transition-colors"
+                        >
+                            ← Back to Setup
+                        </button>
                     </div>
                 )}
             </div>

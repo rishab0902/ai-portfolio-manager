@@ -43,14 +43,18 @@ export default function Dashboard({ connectionMode }) {
         if (!file) return;
         
         setLoading(true);
-        setAiAnalysis(null); // Reset analysis
+        setError('');
+        setAiAnalysis(null);
         try {
             const data = await uploadGrowwCSV(file);
             setPortfolio(data);
         } catch (err) {
-            setError('Failed to upload/parse Groww Statement (CSV/Excel).');
+            const detail = err.response?.data?.detail || err.message;
+            setError(`Failed to parse file: ${detail}`);
         } finally {
             setLoading(false);
+            // Reset file input so the same file can be re-uploaded
+            event.target.value = '';
         }
     };
 
@@ -335,7 +339,38 @@ export default function Dashboard({ connectionMode }) {
                         </div>
                     </div>
                 </>
-            ) : null}
+            ) : (
+                /* Empty state — shown when no portfolio is loaded */
+                <div className="flex flex-col items-center justify-center py-20 text-center">
+                    <label className="cursor-pointer group w-full max-w-lg">
+                        <div className="border-2 border-dashed border-slate-700 group-hover:border-indigo-500/60 bg-slate-900/50 group-hover:bg-indigo-950/20 rounded-3xl p-14 transition-all duration-300">
+                            <UploadCloud className="w-16 h-16 text-slate-600 group-hover:text-indigo-400 mx-auto mb-5 transition-colors" />
+                            <h3 className="text-xl font-semibold text-slate-300 group-hover:text-white mb-2 transition-colors">
+                                {connectionMode === 'groww' ? 'Upload Your Groww Portfolio' : 'No Data Loaded'}
+                            </h3>
+                            <p className="text-slate-500 text-sm mb-6">
+                                {connectionMode === 'groww'
+                                    ? 'Upload the CSV or Excel statement you exported from Groww. The data is processed locally and never stored.'
+                                    : 'Upload a portfolio statement to get started.'}
+                            </p>
+                            <span className="inline-block bg-indigo-600 group-hover:bg-indigo-500 text-white text-sm font-semibold px-6 py-2.5 rounded-xl transition-colors">
+                                Choose File (.csv or .xlsx)
+                            </span>
+                        </div>
+                        <input
+                            type="file"
+                            accept=".csv,.xlsx"
+                            className="hidden"
+                            onChange={handleFileUpload}
+                        />
+                    </label>
+                    {connectionMode === 'groww' && (
+                        <p className="text-slate-600 text-xs mt-6 max-w-sm">
+                            To export from Groww: Open the app → Portfolio → ⋮ menu → Download Statement
+                        </p>
+                    )}
+                </div>
+            )}
         </div>
     );
 }

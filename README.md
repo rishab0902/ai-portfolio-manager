@@ -42,11 +42,10 @@ GEMINI_API_KEY=your_gemini_key_here
 6. Copy the long string of characters. This is your `GEMINI_API_KEY`. Paste it into your `.env` file.
 
 ### Part B: How to get the ZERODHA_API_KEY & ZERODHA_API_SECRET
-*Note: Zerodha charges ₹2000/month for Kite Connect API access. If you don't want to pay this, use the Groww CSV/Excel upload feature instead!*
 
 1. Navigate to the [Kite Connect Developer Console](https://developers.kite.trade/).
 2. Click "Sign Up" and create a developer account (this is separate from your main Zerodha trading login).
-3. Pay the ₹2000 developer fee to add credits to your account.
+3. Create a new application for personal use.
 4. Click on **"Create New App"**.
 5. Once the app is created, click on the app name in your dashboard.
 6. You will immediately see your **API Key** at the top of the page. Keep this handy for the frontend UI.
