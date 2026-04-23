@@ -4,7 +4,7 @@ An elite, full-stack financial advisory engine that transcends traditional rule-
 
 Unlike standard apps that mindlessly recommend selling at a loss, this engine requires users to define their **Investment Goal, Risk Appetite, Time Horizon, and Emotional Bias**, allowing the AI to dynamically justify holding or rebalancing positions based on deep context and live market data.
 
-![UI Preview](https://via.placeholder.com/1000x500?text=Context-Aware+Dashboard+Preview)
+*(Screenshot placeholder - Add a screenshot of your dashboard here!)*
 
 ## ✨ Core Features
 *   **Context-Aware AI Engine:** Powered by Gemini 2.5 Flash, strictly constrained by custom prompt architectures to prevent LLM hallucinations.
