@@ -28,6 +28,10 @@ def update_env_file(key: str, value: str):
         if not key_found:
             f.write(f"{key}={value}\n")
 
+import logging
+
+logger = logging.getLogger(__name__)
+
 def get_kite_instance():
     """Returns an authenticated KiteConnect instance using manually set keys."""
     # Force reload dotenv in case the file was changed on the fly
@@ -46,7 +50,7 @@ def get_kite_instance():
     # Auto-exchange mechanics if a user pastes a temporary request token
     if REQUEST_TOKEN and len(REQUEST_TOKEN) > 10:
         try:
-            print(f"Intercepted new Request Token! Attempting native exchange...")
+            logger.info("Intercepted new Request Token! Attempting native exchange...")
             data = kite.generate_session(REQUEST_TOKEN, api_secret=API_SECRET)
             ACCESS_TOKEN = data["access_token"]
             
@@ -55,9 +59,9 @@ def get_kite_instance():
             # Nuke the request token so it isn't exchanged again
             update_env_file("ZERODHA_REQUEST_TOKEN", "")
             
-            print("Successfully exchanged and saved the real Access Token.")
+            logger.info("Successfully exchanged and saved the real Access Token.")
         except Exception as e:
-            print(f"Failed to automatically exchange request token: {e}")
+            logger.error(f"Failed to automatically exchange request token: {e}")
             update_env_file("ZERODHA_REQUEST_TOKEN", "") # wipe it anyway to avoid crash loop
             
     if ACCESS_TOKEN:

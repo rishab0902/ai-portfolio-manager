@@ -9,9 +9,9 @@ app = FastAPI(title="AI Portfolio Manager")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=["http://localhost:5173"],  # SonarQube Security Fix: No wildcards
     allow_credentials=True,
-    allow_methods=["*"],
+    allow_methods=["GET", "POST", "PUT", "DELETE"], # SonarQube Security Fix: Explicit methods
     allow_headers=["*"],
 )
 

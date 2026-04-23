@@ -1,9 +1,12 @@
 import os
 import pandas as pd
 import io
+import logging
 from app.models import PortfolioItem, PortfolioSummary
 from app.services.market_data_service import get_current_price
 from app.services.zerodha_auth import get_kite_instance
+
+logger = logging.getLogger(__name__)
 
 def get_mock_zerodha_portfolio() -> PortfolioSummary:
     """Mock an API fetch from Zerodha Kite"""
@@ -21,13 +24,13 @@ def get_zerodha_portfolio() -> PortfolioSummary:
     kite = get_kite_instance()
     
     if not kite:
-        print("Kite API credentials not found. Falling back to mock portfolio.")
+        logger.warning("Kite API credentials not found. Falling back to mock portfolio.")
         return get_mock_zerodha_portfolio()
         
     try:
         kite_holdings = kite.holdings()
     except Exception as e:
-        print(f"Error fetching from Kite. Your token might be expired. Falling back to mock portfolio. Error: {str(e)}")
+        logger.error(f"Error fetching from Kite. Your token might be expired. Falling back to mock portfolio. Error: {str(e)}")
         return get_mock_zerodha_portfolio()
 
     processed_holdings = []
@@ -61,7 +64,7 @@ def get_zerodha_portfolio() -> PortfolioSummary:
             total_val += val
             
     if not processed_holdings:
-        print("No active holdings found in Zerodha account.")
+        logger.info("No active holdings found in Zerodha account.")
         return _process_holdings([])
 
     return PortfolioSummary(
@@ -114,7 +117,7 @@ def parse_groww_csv(file_contents: bytes, filename: str = "portfolio.csv") -> Po
     required_cols = ['symbol', 'stockName', 'quantity', 'avgPrice']
     for col in required_cols:
         if col not in df.columns:
-            print(f"Missing required col: {col}. Returning mock data.")
+            logger.warning(f"Missing required col: {col}. Returning mock data.")
             return get_mock_zerodha_portfolio()
 
     holdings = []

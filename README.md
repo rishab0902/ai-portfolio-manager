@@ -61,7 +61,6 @@ GEMINI_API_KEY="your_gemini_api_key_here"
 ZERODHA_API_KEY="your_kite_api_key"
 ZERODHA_API_SECRET="your_kite_api_secret"
 ZERODHA_REQUEST_TOKEN="paste_daily_token_here_to_auto_exchange"
-ZERODHA_ACCESS_TOKEN=""
 ```
 
 Start the FastAPI server:
@@ -82,6 +81,24 @@ npm run dev
 ```
 
 The application will now be running at `http://localhost:5173`. You can upload a mock `.csv` or `.xlsx` file, or paste your Kite request token in the backend `.env` to connect live.
+
+---
+
+## 📈 How to Use the Groww Integration (No API Keys Required)
+If you do not have a Zerodha Developer API key, you can still use the full power of the AI engine by uploading your Groww holding statement.
+
+1. **Download your Statement:**
+   - Log into your [Groww](https://groww.in) account (via web or app).
+   - Navigate to your Profile/Reports section.
+   - Download the **Holdings Statement** (it will download as an Excel `.xlsx` or `.csv` file).
+2. **Upload to the Dashboard:**
+   - Open your local running dashboard (`http://localhost:5173`).
+   - Click the **Upload Statement** button in the top right corner.
+   - Select your downloaded Groww file.
+   - *(Note: The backend is engineered to automatically bypass the 10 lines of junk metadata Groww places in their Excel files!)*
+3. **Run AI Analysis:**
+   - Set your specific Investment Goal, Risk Appetite, and Emotional Bias using the dropdowns.
+   - Click **Run Context-Aware Analysis** to generate your Hedge Fund-level strategy.
 
 ---
 
