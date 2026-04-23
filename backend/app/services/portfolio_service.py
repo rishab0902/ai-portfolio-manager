@@ -21,37 +21,55 @@ def get_mock_zerodha_portfolio() -> PortfolioSummary:
 
 def get_zerodha_portfolio() -> PortfolioSummary:
     """Fetch real holdings from Zerodha Kite API."""
+    # First try: use credentials provided via frontend setup
+    try:
+        from app.routes.zerodha import get_stored_credentials
+        from kiteconnect import KiteConnect
+
+        creds = get_stored_credentials()
+        if creds["api_key"] and creds["access_token"]:
+            kite = KiteConnect(api_key=creds["api_key"])
+            kite.set_access_token(creds["access_token"])
+            try:
+                kite_holdings = kite.holdings()
+                return _build_portfolio_from_kite(kite_holdings)
+            except Exception as e:
+                logger.error(f"Frontend credentials failed: {e}")
+    except ImportError:
+        pass
+
+    # Fallback: use .env-based credentials
     kite = get_kite_instance()
-    
+
     if not kite:
         logger.warning("Kite API credentials not found. Falling back to mock portfolio.")
         return get_mock_zerodha_portfolio()
-        
+
     try:
         kite_holdings = kite.holdings()
+        return _build_portfolio_from_kite(kite_holdings)
     except Exception as e:
         logger.error(f"Error fetching from Kite. Your token might be expired. Falling back to mock portfolio. Error: {str(e)}")
         return get_mock_zerodha_portfolio()
 
+
+def _build_portfolio_from_kite(kite_holdings: list) -> PortfolioSummary:
+    """Build PortfolioSummary from raw Kite holdings data."""
     processed_holdings = []
-    
     total_val = 0.0
     total_inv = 0.0
 
     for h in kite_holdings:
-        if h['quantity'] > 0: # Only active holdings
+        if h['quantity'] > 0:
             sym = h['tradingsymbol']
-            
-            # Use real kite live price or fallback to average price
             current_price = h.get('last_price', h['average_price'])
-                
             inv = h['quantity'] * h['average_price']
             val = h['quantity'] * current_price
             pl = val - inv
 
             pi = PortfolioItem(
                 symbol=sym,
-                stockName=sym, 
+                stockName=sym,
                 quantity=h['quantity'],
                 avgPrice=h['average_price'],
                 currentPrice=current_price,
@@ -59,10 +77,9 @@ def get_zerodha_portfolio() -> PortfolioSummary:
                 sector="Unknown"
             )
             processed_holdings.append(pi)
-            
             total_inv += inv
             total_val += val
-            
+
     if not processed_holdings:
         logger.info("No active holdings found in Zerodha account.")
         return _process_holdings([])

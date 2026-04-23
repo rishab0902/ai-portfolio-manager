@@ -4,10 +4,10 @@ import { UploadCloud, RefreshCw, Bot, AlertTriangle, TrendingUp, TrendingDown, S
 import clsx from 'clsx';
 import AiAnalysis from './AiAnalysis';
 
-export default function Dashboard() {
+export default function Dashboard({ connectionMode }) {
     const [portfolio, setPortfolio] = useState(null);
     const [aiAnalysis, setAiAnalysis] = useState(null);
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(connectionMode === 'zerodha');
     const [analyzing, setAnalyzing] = useState(false);
     const [error, setError] = useState('');
 
@@ -20,8 +20,10 @@ export default function Dashboard() {
     });
 
     useEffect(() => {
-        loadPortfolio();
-    }, []);
+        if (connectionMode === 'zerodha') {
+            loadPortfolio();
+        }
+    }, [connectionMode]);
 
     const loadPortfolio = async () => {
         setLoading(true);

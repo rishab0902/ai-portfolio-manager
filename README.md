@@ -26,11 +26,10 @@ The AI Portfolio Manager is a full-stack financial advisory engine designed to a
 Create a `.env` file in your `backend` directory with the following configuration:
 
 ```env
-GEMINI_API_KEY=
-ZERODHA_API_KEY=
-ZERODHA_API_SECRET=
-ZERODHA_ACCESS_TOKEN=
+GEMINI_API_KEY=your_gemini_key_here
 ```
+*(Note: Zerodha keys are now securely managed via the frontend Setup UI. You no longer need to manually add them to the `.env` file!)*
+
 
 ## 5. 🔑 Detailed Guide: How to Get Your API Keys
 
@@ -50,8 +49,8 @@ ZERODHA_ACCESS_TOKEN=
 3. Pay the ₹2000 developer fee to add credits to your account.
 4. Click on **"Create New App"**.
 5. Once the app is created, click on the app name in your dashboard.
-6. You will immediately see your **API Key** at the top of the page. Copy this to `ZERODHA_API_KEY` in your `.env`.
-7. Right below it, you will see your **API Secret** (you may need to click 'Show' to reveal it). Copy this to `ZERODHA_API_SECRET` in your `.env`.
+6. You will immediately see your **API Key** at the top of the page. Keep this handy for the frontend UI.
+7. Right below it, you will see your **API Secret** (you may need to click 'Show' to reveal it). Keep this handy as well.
 
 ## 6. 🔑 Zerodha API Setup
 
@@ -59,7 +58,7 @@ ZERODHA_ACCESS_TOKEN=
 Use the following values while creating your app:
 
 **Redirect URL:**
-`https://127.0.0.1/callback`
+`http://localhost:5173/callback`
 
 **Postback URL:**
 `https://google.com`
@@ -75,20 +74,14 @@ Use the following values while creating your app:
 ---
 
 ### 🔄 Authentication Flow
-1. Open login URL:
-`https://kite.trade/connect/login?api_key=YOUR_API_KEY&v=3`
-
-2. Login and authorize
-
-3. You will be redirected to:
-`https://127.0.0.1/callback?request_token=XXXX`
-
-4. Copy the `request_token`
-
-5. Generate `access_token` via backend
-
-6. Add to `.env`:
-`ZERODHA_ACCESS_TOKEN=your_generated_token`
+1. Start the application and open `http://localhost:5173` in your browser.
+2. The **Setup Page** will automatically appear (auto-filled with `.env` keys if available).
+3. Click **"Next Step"** to open the official Zerodha Login page.
+4. After logging in and authorizing, you will be redirected to:
+   `https://127.0.0.1/callback?request_token=XXXX` (This page will appear broken).
+5. Copy the **entire URL** from your browser's address bar.
+6. Paste the URL back into the Setup Page and click **"Verify & Connect"**.
+7. The system will securely exchange the token and load your Dashboard!
 
 ---
 

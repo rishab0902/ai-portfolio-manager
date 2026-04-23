@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.routes import portfolio, analysis
+from app.routes import portfolio, analysis, zerodha
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -17,6 +17,7 @@ app.add_middleware(
 
 app.include_router(portfolio.router, prefix="/api")
 app.include_router(analysis.router, prefix="/api")
+app.include_router(zerodha.router, prefix="/api")
 
 @app.get("/")
 def read_root():
