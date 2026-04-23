@@ -34,8 +34,8 @@ Ensure you have the following installed on your machine before you begin:
 
 ### 1. Clone the Repository
 ```bash
-git clone https://github.com/yourusername/portfolio-analysis-ai.git
-cd portfolio-analysis-ai
+git clone https://github.com/rishab0902/ai-portfolio-manager.git
+cd ai-portfolio-manager
 ```
 
 ### 2. Backend Setup
