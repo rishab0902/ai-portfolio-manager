@@ -31,7 +31,6 @@ export default function Dashboard() {
             setPortfolio(data);
         } catch (err) {
             setError('Failed to fetch portfolio data.');
-            console.error(err);
         } finally {
             setLoading(false);
         }
@@ -48,7 +47,6 @@ export default function Dashboard() {
             setPortfolio(data);
         } catch (err) {
             setError('Failed to upload/parse Groww Statement (CSV/Excel).');
-            console.error(err);
         } finally {
             setLoading(false);
         }
@@ -67,7 +65,6 @@ export default function Dashboard() {
             }, 300);
         } catch (err) {
             setError('Failed to run AI analysis: ' + (err.response?.data?.detail || err.message));
-            console.error(err);
         } finally {
             setAnalyzing(false);
         }

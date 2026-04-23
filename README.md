@@ -1,5 +1,8 @@
 # AI Portfolio Manager
 
+![App Screenshot](https://via.placeholder.com/1000x500?text=AI+Portfolio+Manager+Dashboard)
+*(Please replace the above placeholder with an actual screenshot of your application)*
+
 ## 1. Project Overview
 The AI Portfolio Manager is a full-stack financial advisory engine designed to analyze investment portfolios. Unlike standard applications that mindlessly recommend selling assets operating at a loss, this platform utilizes context-aware AI. By factoring in user-defined intent, risk tolerance, and time horizons, the system acts as a personalized hedge fund manager, providing nuanced, data-driven decisions.
 
@@ -20,7 +23,7 @@ The AI Portfolio Manager is a full-stack financial advisory engine designed to a
 * **APIs:** Zerodha Kite Connect
 
 ## 4. Environment Variables
-Create a `.env` file in your backend directory with the following configuration:
+Create a `.env` file in your `backend` directory with the following configuration:
 
 ```env
 GEMINI_API_KEY=
@@ -29,51 +32,102 @@ ZERODHA_API_SECRET=
 ZERODHA_ACCESS_TOKEN=
 ```
 
-## 5. Zerodha Integration
-The platform integrates directly with Zerodha via the Kite Connect API using a manual OAuth flow. 
+## 5. 🔑 Detailed Guide: How to Get Your API Keys
 
-**Step 1:** The user opens the login URL in their browser:
+### Part A: How to get the GEMINI_API_KEY (Free)
+1. Navigate to [Google AI Studio](https://aistudio.google.com/).
+2. Sign in using your standard Google/Gmail account.
+3. Look at the left-hand navigation sidebar and click the **"Get API key"** button.
+4. Click the blue **"Create API key"** button.
+5. Select "Create API key in new project".
+6. Copy the long string of characters. This is your `GEMINI_API_KEY`. Paste it into your `.env` file.
+
+### Part B: How to get the ZERODHA_API_KEY & ZERODHA_API_SECRET
+*Note: Zerodha charges ₹2000/month for Kite Connect API access. If you don't want to pay this, use the Groww CSV/Excel upload feature instead!*
+
+1. Navigate to the [Kite Connect Developer Console](https://developers.kite.trade/).
+2. Click "Sign Up" and create a developer account (this is separate from your main Zerodha trading login).
+3. Pay the ₹2000 developer fee to add credits to your account.
+4. Click on **"Create New App"**.
+5. Once the app is created, click on the app name in your dashboard.
+6. You will immediately see your **API Key** at the top of the page. Copy this to `ZERODHA_API_KEY` in your `.env`.
+7. Right below it, you will see your **API Secret** (you may need to click 'Show' to reveal it). Copy this to `ZERODHA_API_SECRET` in your `.env`.
+
+## 6. 🔑 Zerodha API Setup
+
+### App Configuration
+Use the following values while creating your app:
+
+**Redirect URL:**
+`https://127.0.0.1/callback`
+
+**Postback URL:**
+`https://google.com`
+
+---
+
+### ⚠️ Important Notes
+- Redirect URL is used to receive `request_token`
+- Postback URL is NOT used in this project
+- Manual authentication flow is used
+- Google URL is only a placeholder for HTTPS requirement
+
+---
+
+### 🔄 Authentication Flow
+1. Open login URL:
 `https://kite.trade/connect/login?api_key=YOUR_API_KEY&v=3`
 
-**Step 2:** After logging in, the user is redirected to the callback URL:
-`http://localhost:8000/callback?request_token=XXXX`
+2. Login and authorize
 
-**Step 3:** The user copies the `request_token` from the URL.
+3. You will be redirected to:
+`https://127.0.0.1/callback?request_token=XXXX`
 
-**Step 4:** The backend exchanges the `request_token` to generate the `access_token`.
+4. Copy the `request_token`
 
-**Step 5:** The user sets the `ZERODHA_ACCESS_TOKEN` in the `.env` file.
+5. Generate `access_token` via backend
 
-*Note: The access token expires daily and must be regenerated prior to each trading session.*
+6. Add to `.env`:
+`ZERODHA_ACCESS_TOKEN=your_generated_token`
 
-## 6. Groww Integration
+---
+
+⚠️ **Note:**
+Access token expires daily and must be regenerated
+
+## 7. Groww Integration
 Because Groww does not currently provide an official public trading API, the application relies on manual portfolio imports. 
-* Portfolios can be imported via CSV export or manual input.
-* The application natively parses the structured data, extracts the holdings, and feeds it into the analysis engine.
+* Portfolios can be imported via CSV/Excel export directly from the Groww platform.
+* The application natively parses the raw structured data, dynamically bypasses any junk metadata headers, extracts the active holdings, and feeds them into the analysis engine.
 
-## 7. Running the Application
+## 8. Running the Application
 
 **Backend:**
-Navigate to the backend directory, activate your virtual environment, and run:
+Navigate to the backend directory, activate your virtual environment, install dependencies, and start the server:
 ```bash
+cd backend
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
 uvicorn app.main:app --reload
 ```
 
 **Frontend:**
-Navigate to the frontend directory and run:
+Navigate to the frontend directory, install node modules, and start the development server:
 ```bash
+cd frontend
 npm install
 npm run dev
 ```
 
-## 8. AI Analysis Logic
+## 9. AI Analysis Logic
 Recommendations generated by the AI are not strictly based on isolated profit/loss metrics. Instead, the engine evaluates the overall health of the portfolio using:
 * Diversification metrics
 * Sector exposure
 * Long-term fundamental potential
 * User intent and strategy preferences
 
-## 9. Future Enhancements
+## 10. Future Enhancements
 * Auto token refresh for API endpoints
 * Real-time market data streaming
 * Direct order execution from the dashboard

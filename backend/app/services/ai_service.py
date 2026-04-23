@@ -1,8 +1,11 @@
 import os
 import json
+import logging
 import google.generativeai as genai
 from app.models import PortfolioSummary, AIRiskAnalysis, UserIntent
 from app.services.market_data_service import get_latest_news
+
+logger = logging.getLogger(__name__)
 
 def analyze_portfolio(portfolio: PortfolioSummary, intent: UserIntent) -> AIRiskAnalysis:
     """Uses Gemini to analyze the portfolio and return a structured JSON response."""
@@ -86,5 +89,5 @@ OUTPUT JSON ONLY. Do not use markdown blocks like ```json.
         data = json.loads(text)
         return AIRiskAnalysis(**data)
     except json.JSONDecodeError as e:
-        print(f"Failed to parse JSON from Gemini: {text}")
-        raise ValueError("Failed to parse AI response into strict JSON format.")
+        logger.error(f"Failed to parse JSON from Gemini: {text}")
+        raise ValueError("Invalid response format from AI")

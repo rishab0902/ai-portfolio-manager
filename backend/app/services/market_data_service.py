@@ -14,7 +14,8 @@ def get_current_price(symbol: str) -> float:
             return round(data['Close'].iloc[-1], 2)
         return 0.0
     except Exception as e:
-        print(f"Error fetching price for {symbol}: {e}")
+        import logging
+        logging.getLogger(__name__).warning(f"Error fetching price for {symbol}: {e}")
         return 0.0
 
 def get_latest_news(symbol: str) -> list:

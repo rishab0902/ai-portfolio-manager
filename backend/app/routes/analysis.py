@@ -13,5 +13,6 @@ def perform_ai_analysis(payload: AnalysisRequest):
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
-        print(f"AI ERROR FATAL: {e}")
+        import logging
+        logging.getLogger(__name__).error(f"AI ERROR FATAL: {e}")
         raise HTTPException(status_code=500, detail=f"AI Error: {str(e)}")
